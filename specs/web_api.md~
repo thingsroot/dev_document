@@ -43,7 +43,7 @@ API路径示例:
 ```json
 {
     "ok": true,
-    "stuff": "something_done"
+    "stuff", "something_done"
 }
 ```
 
