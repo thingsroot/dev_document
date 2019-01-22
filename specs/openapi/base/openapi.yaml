@@ -1,0 +1,884 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://localhost/api/v1/'
+    description: Local Testing Server
+  - url: 'http://ioe.thingsroot.com/api/method/'
+    description: Publish Server
+info:
+  description: 'This is a thingsroot cloud server. '
+  version: 1.0.0
+  title: ThingsRoot Cloud Base APIs
+  termsOfService: 'http://thingsroot.com/terms/'
+  contact:
+    email: dirk.chang@thingsroot.com
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
+tags:
+  - name: user
+    description: Everything about your account
+    externalDocs:
+      description: Find out more
+      url: 'http://thingsroot.com'
+  - name: gateways
+    description: Everything about your freeioe gateway devices
+    externalDocs:
+      description: Find out more
+      url: 'http://thingsroot.com'
+  - name: applications
+    description: FreeIOE Application Store
+    externalDocs:
+      description: Find out more
+      url: 'http://freeioe.org'
+  - name: configurations
+    description: 'Operations about device configuration, application templates'
+  - name: companies
+    description: 'Operations about device configuration, application templates'
+  - name: activities
+    description: Platform activities
+  - name: events
+    description: Device event
+  - name: pushers
+    description: Cloud Pushers
+  - name: store
+    description: Cloud Application Store
+paths:
+  /user.test:
+    get:
+      tags:
+        - user
+      summary: Test api avaiable
+      operationId: testUser
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiTestResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /user.create:
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: For sign up page, when user not logined.
+      operationId: createUser
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSignup'
+        description: Created user object
+        required: true
+      parameters: []
+  /user.login:
+    post:
+      tags:
+        - user
+      summary: Logs user into the system
+      description: Login with pasword
+      operationId: loginUser
+      parameters:
+        - name: username
+          in: query
+          description: The user name for login
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: true
+          schema:
+            type: string
+            format: password
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error Num
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - username_password_not_matched
+  /user.logout:
+    post:
+      tags:
+        - user
+      summary: Logs out current logged in user session
+      description: ''
+      operationId: logoutUser
+      responses:
+        default:
+          description: successful operation
+      parameters: []
+  /user.csrf_token:
+    get:
+      tags:
+        - user
+      summary: Get user csrf_token
+      operationId: csrfTokenUser
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+      parameters: []
+  /user.info:
+    get:
+      tags:
+        - user
+      summary: Get user information
+      description: Get user information after logined.
+      operationId: getUserInfo
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /user.update:
+    get:
+      tags:
+        - user
+      summary: Update user information
+      description: Update your account information after logined.
+      operationId: updateUserInfo
+      requestBody:
+        required: true
+        description: User information object
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Email address
+                phone:
+                  type: string
+                  format: phone
+                  description: Phone number
+                first_name:
+                  type: string
+                  description: First name
+                last_name:
+                  type: string
+                  description: Last name
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - no_permission
+                  - exception
+  /user.update_password:
+    post:
+      tags:
+        - user
+      summary: Update user password
+      description: Reset user password with reset key or with logged in session
+      operationId: updatePassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                new_password:
+                  type: string
+                logout_all_sessions:
+                  type: integer
+                  enum:
+                    - 0
+                    - 1
+                key:
+                  type: string
+                  description: Password reset key
+                old_password:
+                  type: string
+                  description: Password reset key
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exeception
+                  - reset_key_required
+                  - reset_key_incorrect 
+                  - update_password_failed
+      parameters: []
+  /user.reset_password:
+    post:
+      tags:
+        - user
+      summary: Reset user password
+      description: Server will send password reset email to your email box
+      operationId: resetPassword
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - guest_not_allowed
+                  - not_allowed
+                  - user_disabled
+                  - user_not_found
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+  /user.token.create:
+    post:
+      tags:
+        - user
+      summary: Create user auth token
+      operationId: createUserToken
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - authorization_code_exists
+                  - authorization_code_created
+      parameters: []
+  /user.token.info:
+    get:
+      tags:
+        - user
+      summary: Get user auth token
+      description: Get user auth token for access apis in your client instead of cookies
+      operationId: getUserToken
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - authorization_code_not_exists
+      parameters: []
+  /user.token.update:
+    get:
+      tags:
+        - user
+      summary: Update user auth token
+      operationId: updateUserToken
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - authorization_code_not_exists
+      parameters: []
+  /user.token.remove:
+    get:
+      tags:
+        - user
+      summary: Remove user auth token
+      operationId: removeUserToken
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - authorization_code_not_exists
+                  - auth_code_removed
+      parameters: []
+  /user.virtual_gateways.list:
+    get:
+      tags:
+        - user
+      summary: List virtual gateway sn
+      operationId: listUserGateway
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /user.virtual_gateways.create:
+    get:
+      tags:
+        - user
+      summary: Create virtual gateway sn
+      operationId: createUserGateway
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - virtual_gateway_created
+  /user.virtual_gateways.info:
+    get:
+      tags:
+        - user
+      summary: Get virtual gateway information
+      operationId: getUserGatewayInfo
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - virtual_gateway_created
+                  - has_no_permission
+  /{category}.activities.list:
+    get:
+      tags:
+        - activities
+      summary: Get activities
+      operationId: listActivity
+      parameters:
+        - name: category
+          in: path
+          description: 'Activity category'
+          required: true
+          schema:
+            type: string
+            enum:
+              - user
+              - companies
+              - gateways
+        - name: name
+          in: path
+          description: 'Activity category id'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - has_no_permission
+  /{category}.activities.count:
+    get:
+      tags:
+        - activities
+      summary: Get activities count
+      operationId: countActivity
+      parameters:
+        - name: category
+          in: path
+          description: 'Activity category'
+          required: true
+          schema:
+            type: string
+            enum:
+              - user
+              - companies
+              - gateways
+        - name: name
+          in: path
+          description: 'Activity category id'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - has_no_permission
+  /{category}.activities.info:
+    get:
+      tags:
+        - activities
+      summary: Get activities count
+      operationId: getActivityInfo
+      parameters:
+        - name: category
+          in: path
+          description: 'Activity category'
+          required: true
+          schema:
+            type: string
+            enum:
+              - user
+              - companies
+              - gateways
+        - name: name
+          in: path
+          description: 'Activity id'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - has_no_permission
+  /{category}.activities.disponse:
+    get:
+      tags:
+        - activities
+      summary: Get activities count
+      operationId: disponseActivity
+      parameters:
+        - name: category
+          in: path
+          description: 'Activity category'
+          required: true
+          schema:
+            type: string
+            enum:
+              - user
+              - companies
+              - gateways
+        - name: name
+          in: path
+          description: 'Activity id'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - has_no_permission
+  /gateways.test:
+    post:
+      tags:
+        - gateways
+      summary: Check whether the api is available or not
+      operationId: apiTest
+      requestBody:
+        $ref: '#/components/requestBodies/Gateway'
+      responses:
+        '200':
+          description: Operation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      parameters: []
+  /gateways.add:
+    post:
+      tags:
+        - gateways
+      summary: Add a new gateway device to your gateway list
+      operationId: addGateway
+      requestBody:
+        $ref: '#/components/requestBodies/GatewayNew'
+      responses:
+        '200':
+          description: operation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.update:
+    post:
+      tags:
+        - gateways
+      summary: Update gateway device information
+      operationId: updateGateway
+      requestBody:
+        $ref: '#/components/requestBodies/Gateway'
+      responses:
+        '200':
+          description: operation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '417':
+          description: operation not found
+        '500':
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.info:
+    get:
+      tags:
+        - gateways
+      summary: Query gateway infomration
+      operationId: queryGateway
+      parameters:
+        - name: name
+          in: query
+          description: Gateway ID ( serial number )
+          required: true
+          schema:
+            type: string
+            default: xxxxxxxxxx
+      responses:
+        '200':
+          description: operation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '417':
+          description: operation not found
+        '500':
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.remove:
+    post:
+      tags:
+        - gateways
+      summary: Remove gateway from your gateway list
+      operationId: removeGateway
+      parameters:
+        - name: devices
+          in: query
+          description: Gateway ID ( serial number )
+          required: true
+          explode: true
+          schema:
+            type: string
+            default: xxxxxxxxxx
+      responses:
+        '200':
+          description: operation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          $ref: '#/components/responses/ApiExceptionResponse'
+externalDocs:
+  description: See ThingsRoot API example
+  url: 'https://thingsroot.com/api/example.html'
+components:
+  schemas:
+    Company:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 'Company id, the company short name'
+    GatewayNew:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Gateway devce serial number.
+        device_name:
+          type: string
+          description: Gateway device name specified by user.
+        description:
+          type: string
+          description: Gateway device description sepcified by user.
+        owner_type:
+          type: string
+          description: Owner type
+          enum:
+            - User
+            - Cloud Company Group
+          default: User
+        owner_id:
+          type: string
+          description: Onwer ID
+    Gateway:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Gateway device id (serial number).
+        sn:
+          type: string
+          description: Gateway device serial number
+        device_name:
+          type: string
+          description: Gateway device name specified by user.
+        description:
+          type: string
+          description: Gateway device description sepcified by user.
+        enabled:
+          type: integer
+          description: Gateway device enabled for not (0 is not)
+          enum:
+            - 0
+            - 1
+        company:
+          type: string
+          description: Gateway device owner company name(id)
+        owner_type:
+          type: string
+          description: Gateway device owner type
+          enum:
+            - User
+            - Cloud Company Group
+        owner_id:
+          type: string
+          description: Gateway device owner id
+        longitude:
+          type: string
+        latitude:
+          type: string
+        device_status:
+          type: string
+          description: Gateway device online status
+          enum:
+            - ONLINE
+            - OFFLINE
+        last_updated:
+          type: string
+          format: date-time
+          description: Last device updated time.
+        use_beta:
+          type: integer
+          description: Has device enabled beta mode or not
+        use_beta_start_time:
+          type: string
+          format: date-time
+          description: The beta mold enable time
+    UserSignup:
+      type: object
+      properties:
+        email:
+          type: email
+          description: User email
+        full_name:
+          type: string
+          description: User fullname
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Username
+        csrf_token:
+          type: string
+          description: CSRF Token
+        groups:
+          type: array
+          description: Company Groups ID list
+        companies:
+          type: array
+          description: Company ID list
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        phone:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      xml:
+        name: Tag
+    ApiResponseOK:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        info:
+          type: string
+        data:
+          type: any
+    ApiResponseOK_Warning:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        warning:
+          type: string
+        data:
+          type: any
+    ApiResponseOK_Warnings:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        error:
+          type: string
+        warning:
+          type: array
+          items:
+              type: string
+        data:
+          type: object
+    ApiResponseOK_Error:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        error:
+          type: string
+        exception:
+          type: string
+    ApiResponse:
+      oneOf:
+        - $ref: '#/components/schemas/ApiResponseOK'
+        - $ref: '#/components/schemas/ApiResponseOK_Warning'
+        - $ref: '#/components/schemas/ApiResponseOK_Warnings'
+        - $ref: '#/components/schemas/ApiResponseOK_Error'
+    ApiTestResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          type: string
+        source:
+          type: string
+    ApiExceptionResponse:
+      type: object
+      properties:
+        exc:
+          type: string
+  requestBodies:
+    UserSignup:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserSignup'
+      description: New user information object
+      required: true
+    GatewayNew:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GatewayNew'
+      description: New gateway infomation object
+      required: true
+    Gateway:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Gateway'
+      description: Gateway infomation object
+      required: true
+    UserArray:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'
+      description: List of user object
+      required: true
+  responses:
+    ApiResponse:
+      description: successful operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+    ApiTestResponse:
+      description: successful operation from test apis
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiTestResponse'
+    ApiExceptionResponse:
+      description: operation exception result repsonse
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiExceptionResponse'
+  securitySchemes:
+    auth_code:
+      type: apiKey
+      name: AuthorizationCode
+      in: header
+  links: {}
+  callbacks: {}
+security:
+  - auth_code: []
