@@ -2,7 +2,7 @@ openapi: 3.0.0
 servers:
   - url: 'http://localhost/api/v1/'
     description: Local Testing Server
-  - url: 'http://ioe.thingsroot.com/api/method/'
+  - url: 'http://ioe.thingsroot.com/api/v1/'
     description: Publish Server
 info:
   description: 'This is a thingsroot cloud server. '
@@ -42,6 +42,8 @@ tags:
     description: Cloud Pushers
   - name: store
     description: Cloud Application Store
+  - name: xtags
+    description: Object tags
 paths:
   /user.test:
     get:
@@ -391,7 +393,7 @@ paths:
       parameters:
         - name: category
           in: path
-          description: 'Activity category'
+          description: Activity category
           required: true
           schema:
             type: string
@@ -400,8 +402,8 @@ paths:
               - companies
               - gateways
         - name: name
-          in: path
-          description: 'Activity category id'
+          in: query
+          description: Activity category id
           required: true
           schema:
             type: string
@@ -428,7 +430,7 @@ paths:
       parameters:
         - name: category
           in: path
-          description: 'Activity category'
+          description: Activity category
           required: true
           schema:
             type: string
@@ -437,8 +439,8 @@ paths:
               - companies
               - gateways
         - name: name
-          in: path
-          description: 'Activity category id'
+          in: query
+          description: Activity category id
           required: true
           schema:
             type: string
@@ -465,7 +467,7 @@ paths:
       parameters:
         - name: category
           in: path
-          description: 'Activity category'
+          description: Activity category
           required: true
           schema:
             type: string
@@ -474,8 +476,8 @@ paths:
               - companies
               - gateways
         - name: name
-          in: path
-          description: 'Activity id'
+          in: query
+          description: Activity id
           required: true
           schema:
             type: string
@@ -502,7 +504,7 @@ paths:
       parameters:
         - name: category
           in: path
-          description: 'Activity category'
+          description: Activity category
           required: true
           schema:
             type: string
@@ -511,8 +513,172 @@ paths:
               - companies
               - gateways
         - name: name
+          in: query
+          description: Activity id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - has_no_permission
+  /{object}.tags.list:
+    get:
+      tags:
+        - xtags
+      summary: Get object tags 
+      operationId: listTags
+      parameters:
+        - name: object
           in: path
-          description: 'Activity id'
+          description: Object type
+          required: true
+          schema:
+            type: string
+            enum:
+              - gateways
+              - applications
+              - configurations
+        - name: name
+          in: query
+          description: Object id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+  /{object}.tags.create:
+    get:
+      tags:
+        - xtags
+      summary: Create tags for specified object
+      operationId: createTags
+      parameters:
+        - name: object
+          in: path
+          description: Object type
+          required: true
+          schema:
+            type: string
+            enum:
+              - gateways
+              - applications
+              - configurations
+        - name: name
+          in: query
+          description: Object ID
+          required: true
+          schema:
+            type: string
+        - name: tags
+          in: query
+          description: tags to remove
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - has_no_permission
+  /{object}.tags.remove:
+    get:
+      tags:
+        - xtags
+      summary: Remove tags from object
+      operationId: removeTags
+      parameters:
+        - name: object
+          in: path
+          description: Object Type
+          required: true
+          schema:
+            type: string
+            enum:
+              - gateways
+              - applications
+              - configurations
+        - name: name
+          in: query
+          description: Object ID
+          required: true
+          schema:
+            type: string
+        - name: tags
+          in: query
+          description: tags to remove
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - has_no_permission
+  /{object}.tags.clear:
+    get:
+      tags:
+        - xtags
+      summary: Clear all tags from object
+      operationId: clearTags
+      parameters:
+        - name: object
+          in: path
+          description: Object Type
+          required: true
+          schema:
+            type: string
+            enum:
+              - gateways
+              - applications
+              - configurations
+        - name: name
+          in: query
+          description: Object ID
           required: true
           schema:
             type: string
@@ -535,18 +701,25 @@ paths:
       tags:
         - gateways
       summary: Check whether the api is available or not
-      operationId: apiTest
+      operationId: apiGatewayTest
       requestBody:
         $ref: '#/components/requestBodies/Gateway'
       responses:
         '200':
-          description: Operation result
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
+          $ref: '#/components/responses/ApiResponse'
       parameters: []
-  /gateways.add:
+  /gateways.list:
+    get:
+      tags:
+        - gateways
+      summary: Get user gateway list
+      operationId: listGateway
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.create:
     post:
       tags:
         - gateways
@@ -556,12 +729,8 @@ paths:
         $ref: '#/components/requestBodies/GatewayNew'
       responses:
         '200':
-          description: operation result
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '500':
+          $ref: '#/components/responses/ApiResponse'
+        default:
           $ref: '#/components/responses/ApiExceptionResponse'
   /gateways.update:
     post:
@@ -573,14 +742,8 @@ paths:
         $ref: '#/components/requestBodies/Gateway'
       responses:
         '200':
-          description: operation result
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '417':
-          description: operation not found
-        '500':
+          $ref: '#/components/responses/ApiResponse'
+        default:
           $ref: '#/components/responses/ApiExceptionResponse'
   /gateways.info:
     get:
@@ -598,14 +761,8 @@ paths:
             default: xxxxxxxxxx
       responses:
         '200':
-          description: operation result
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '417':
-          description: operation not found
-        '500':
+          $ref: '#/components/responses/ApiResponse'
+        default:
           $ref: '#/components/responses/ApiExceptionResponse'
   /gateways.remove:
     post:
@@ -624,12 +781,509 @@ paths:
             default: xxxxxxxxxx
       responses:
         '200':
-          description: operation result
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '500':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.exec_result:
+    get:
+      tags:
+        - gateways
+      summary: Get output/command execution result
+      operationId: getGatewayDeviceExecutionResult
+      parameters:
+        - name: gateway
+          in: query
+          description: Gateway ID
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: query
+          description: Execution ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.applications.list:
+    get:
+      tags:
+        - gateways
+      summary: Get application list
+      operationId: listGatewayApplication
+      parameters:
+        - name: gateway
+          in: query
+          description: Gateway ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.applications.info:
+    get:
+      tags:
+        - gateways
+      summary: Get application information
+      operationId: getGatewayApplicationInfo
+      parameters:
+        - name: gateway
+          in: query
+          description: Gateway ID
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: Application instance ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.applications.install:
+    post:
+      tags:
+        - gateways
+      summary: Install application to gateway
+      operationId: installGatewayApplication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gateway:
+                  type: string                
+                  description: Gateway ID ( serial number )
+                name:
+                  type: string
+                  description: Application instance ID
+                app:
+                  type: string
+                  description: Application ID in store
+                version:
+                  type: integer
+                  description: Application version in store
+                conf:
+                  type: object
+                  description: Application Configuration object
+                id:
+                  type: string
+                  description: Execution ID for tracking result
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.applications.remove:
+    post:
+      tags:
+        - gateways
+      summary: Remove gateway application
+      operationId: removeGatewayApplication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gateway:
+                  type: string                
+                  description: Gateway ID ( serial number )
+                name:
+                  type: string
+                  description: Application instance ID
+                id:
+                  type: string
+                  description: Execution ID for tracking result
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.applications.conf:
+    post:
+      tags:
+        - gateways
+      summary: Set configuration for application
+      operationId: setGatewayApplicationConf
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gateway:
+                  type: string                
+                  description: Gateway ID ( serial number )
+                name:
+                  type: string
+                  description: Application instance ID
+                conf:
+                  type: object
+                  description: Application Configuration object
+                id:
+                  type: string
+                  description: Execution ID for tracking result
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.applications.start:
+    post:
+      tags:
+        - gateways
+      summary: Trigger application start to run
+      operationId: startGatewayApplication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gateway:
+                  type: string                
+                  description: Gateway ID ( serial number )
+                name:
+                  type: string
+                  description: Application instance ID
+                id:
+                  type: string
+                  description: Execution ID for tracking result
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.applications.stop:
+    post:
+      tags:
+        - gateways
+      summary: Trigger application stop from running
+      operationId: stopGatewayApplication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gateway:
+                  type: string                
+                  description: Gateway ID ( serial number )
+                name:
+                  type: string
+                  description: Application instance ID
+                id:
+                  type: string
+                  description: Execution ID for tracking result
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.applications.upgrade:
+    post:
+      tags:
+        - gateways
+      summary: Upgrade the install application in gateway
+      operationId: upgradeGatewayApplication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gateway:
+                  type: string                
+                  description: Gateway ID ( serial number )
+                name:
+                  type: string
+                  description: Application instance ID
+                app:
+                  type: string
+                  description: Application ID in store
+                version:
+                  type: integer
+                  description: Application version in store
+                conf:
+                  type: object
+                  description: Application Configuration object
+                id:
+                  type: string
+                  description: Execution ID for tracking result
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.beta.info:
+    get:
+      tags:
+        - gateways
+      summary: Get beta mode information
+      operationId: getGatewayBetaInfo
+      parameters:
+        - name: gateway
+          in: query
+          description: Gateway ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.beta.enable:
+    post:
+      tags:
+        - gateways
+      summary: Enable beta mode
+      operationId: enableBetaMode
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gateway:
+                  type: string                
+                  description: Gateway ID ( serial number )
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.devices.list:
+    get:
+      tags:
+        - gateways
+      summary: Get devices objects in specified gateway
+      operationId: listGatewayDevices
+      parameters:
+        - name: gateway
+          in: query
+          description: Gateway ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.devices.info:
+    get:
+      tags:
+        - gateways
+      summary: Get devices object detail information
+      operationId: listGatewayDevices
+      parameters:
+        - name: gateway
+          in: query
+          description: Gateway ID
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: Device ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.devices.data:
+    get:
+      tags:
+        - gateways
+      summary: Get devices object input data information
+      operationId: listGatewayDeviceInputs
+      parameters:
+        - name: gateway
+          in: query
+          description: Gateway ID
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: Device ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.devices.output:
+    post:
+      tags:
+        - gateways
+      summary: Set output prop value for sepecified device
+      operationId: outputGatewayDeviceProp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gateway:
+                  type: string                
+                  description: Gateway ID ( serial number )
+                name:
+                  type: string
+                  description: Device ID
+                output:
+                  type: string
+                  description: Device output ID
+                prop:
+                  type: string
+                  description: Device output property ID
+                value:
+                  type: any
+                  description: Output value
+                id:
+                  type: string
+                  description: Execution ID for tracking the result
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /gateways.devices.command:
+    post:
+      tags:
+        - gateways
+      summary: Send command for sepecified device
+      operationId: commandGatewayDeviceProp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gateway:
+                  type: string                
+                  description: Gateway ID ( serial number )
+                name:
+                  type: string
+                  description: Device ID
+                command:
+                  type: string
+                  description: Device command ID
+                param:
+                  type: any
+                  description: Command parameters
+                id:
+                  type: string
+                  description: Execution ID for tracking the result
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /batch_tasks.list:
+    get:
+      tags:
+        - batch_tasks
+      summary: Get gateway batch tasks list
+      operationId: listBatchTasks
+      parameters: []
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /batch_tasks.create:
+    post:
+      tags:
+        - batch_tasks
+      summary: Create batch task
+      operationId: createBatchTask
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task_name:
+                  type: string                
+                  description: Task readable name
+                description:
+                  type: string
+                  description: Task description
+                timeout:
+                  type: integer
+                  description: Task run timeout
+                script:
+                  type: string
+                  description: Task script content
+                gateways:
+                  type: array
+                  description: Gateway ID list
+                  items:
+                    type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /batch_tasks.info:
+    get:
+      tags:
+        - batch_tasks
+      summary: Get batch task information
+      operationId: getBatchTaskInfo
+      parameters:
+        - name: name
+          in: query
+          description: Batch Task ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /batch_tasks.status:
+    post:
+      tags:
+        - batch_tasks
+      summary: Get Batch Task status
+      operationId: getBatchTaskStatus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Batch Task ID
+                update:
+                  type: boolean
+                  description: Trigger task status update if True, or only read the status.
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
           $ref: '#/components/responses/ApiExceptionResponse'
 externalDocs:
   description: See ThingsRoot API example
