@@ -462,7 +462,7 @@ paths:
     get:
       tags:
         - activities
-      summary: Get activities count
+      summary: Get detailed activity information
       operationId: getActivityInfo
       parameters:
         - name: category
@@ -499,7 +499,7 @@ paths:
     get:
       tags:
         - activities
-      summary: Get activities count
+      summary: Disponse the activity
       operationId: disponseActivity
       parameters:
         - name: category
@@ -515,6 +515,154 @@ paths:
         - name: name
           in: query
           description: Activity id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - has_no_permission
+  /{category}.events.list:
+    get:
+      tags:
+        - events
+      summary: Get events
+      operationId: listEvent
+      parameters:
+        - name: category
+          in: path
+          description: Event category
+          required: true
+          schema:
+            type: string
+            enum:
+              - user
+              - companies
+              - gateways
+        - name: name
+          in: query
+          description: Event category id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - has_no_permission
+  /{category}.events.count:
+    get:
+      tags:
+        - activities
+      summary: Get events count
+      operationId: countEvent
+      parameters:
+        - name: category
+          in: path
+          description: Event category
+          required: true
+          schema:
+            type: string
+            enum:
+              - user
+              - companies
+              - gateways
+        - name: name
+          in: query
+          description: Event category id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - has_no_permission
+  /{category}.events.info:
+    get:
+      tags:
+        - activities
+      summary: Get event detailed information 
+      operationId: getEventInfo
+      parameters:
+        - name: category
+          in: path
+          description: Event category
+          required: true
+          schema:
+            type: string
+            enum:
+              - user
+              - companies
+              - gateways
+        - name: name
+          in: query
+          description: Event id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+                  - has_no_permission
+  /{category}.event.disponse:
+    get:
+      tags:
+        - activities
+      summary: Disponse event
+      operationId: disponseEvent
+      parameters:
+        - name: category
+          in: path
+          description: Event category
+          required: true
+          schema:
+            type: string
+            enum:
+              - user
+              - companies
+              - gateways
+        - name: name
+          in: query
+          description: Event id
           required: true
           schema:
             type: string
