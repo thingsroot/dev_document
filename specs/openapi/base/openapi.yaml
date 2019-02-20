@@ -1433,6 +1433,228 @@ paths:
           $ref: '#/components/responses/ApiResponse'
         default:
           $ref: '#/components/responses/ApiExceptionResponse'
+  /store.list:
+    get:
+      tags:
+        - store
+      summary: Get applications
+      operationId: getStoreApplicationList
+      parameters:
+        - name: name
+          description: Application ID    
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /store.info:
+    get:
+      tags:
+        - store
+      summary: Get application information
+      operationId: getStoreApplicationInfo
+      parameters:
+        - name: name
+          description: Application ID    
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /store.{operation}.list:
+    get:
+      tags:
+        - xtags
+      summary: Get store operation object list 
+      operationId: listStoreOperationObjects
+      parameters:
+        - name: operation
+          in: path
+          description: Operation type
+          required: true
+          schema:
+            type: string
+            enum:
+              - comments
+              - issues
+              - reviews
+        - name: app
+          in: query
+          description: Application ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+  /store.{operation}.create:
+    get:
+      tags:
+        - xtags
+      summary: Create store {operation} object
+      operationId: createStoreOperationObject
+      parameters:
+        - name: operation
+          in: path
+          description: Operation type
+          required: true
+          schema:
+            type: string
+            enum:
+              - comments
+              - issues
+              - reviews
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                app:
+                  type: string                
+                  description: Application id
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+  /store.{operation}.info:
+    get:
+      tags:
+        - xtags
+      summary: Get store {operation} object information
+      operationId: getStoreOperationObjectInformation
+      parameters:
+        - name: operation
+          in: path
+          description: Operation type
+          required: true
+          schema:
+            type: string
+            enum:
+              - comments
+              - issues
+              - reviews
+        - name: name
+          in: query
+          description: Operation Object ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+  /store.{operation}.update:
+    get:
+      tags:
+        - xtags
+      summary: Update store operation object information
+      operationId: updateStoreOperationObjectInformation
+      parameters:
+        - name: operation
+          in: path
+          description: Operation type
+          required: true
+          schema:
+            type: string
+            enum:
+              - comments
+              - issues
+              - reviews
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string                
+                  description: Operation Object id
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
+  /store.{operation}.remove:
+    get:
+      tags:
+        - xtags
+      summary: Remove store {operation} object
+      operationId: removeStoreOperationObject
+      parameters:
+        - name: operation
+          in: path
+          description: Operation type
+          required: true
+          schema:
+            type: string
+            enum:
+              - comments
+              - issues
+              - reviews
+        - name: name
+          in: query
+          description: Operation Object ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+        '501':
+          description: Error enums
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: 
+                  - exception
 externalDocs:
   description: See ThingsRoot API example
   url: 'https://thingsroot.com/api/example.html'
