@@ -28,8 +28,8 @@ tags:
   - name: applications
     description: FreeIOE Application Store
     externalDocs:
-      description: Find out more
-      url: 'http://freeioe.org'
+     description: Find out more
+     url: 'http://freeioe.org'
   - name: configurations
     description: 'Operations about device configuration, application templates'
   - name: companies
@@ -572,7 +572,7 @@ paths:
   /{category}.events.count:
     get:
       tags:
-        - activities
+        - events
       summary: Get events count
       operationId: countEvent
       parameters:
@@ -609,7 +609,7 @@ paths:
   /{category}.events.info:
     get:
       tags:
-        - activities
+        - events
       summary: Get event detailed information 
       operationId: getEventInfo
       parameters:
@@ -646,7 +646,7 @@ paths:
   /{category}.event.disponse:
     get:
       tags:
-        - activities
+        - events
       summary: Disponse event
       operationId: disponseEvent
       parameters:
@@ -974,12 +974,12 @@ paths:
           $ref: '#/components/responses/ApiResponse'
         default:
           $ref: '#/components/responses/ApiExceptionResponse'
-  /gateways.applications.info:
+  /gateways.applications.refresh:
     get:
       tags:
         - gateways
-      summary: Get application information
-      operationId: getGatewayApplicationInfo
+      summary: Refresh application list
+      operationId: refreshGatewayApplication
       parameters:
         - name: gateway
           in: query
@@ -987,10 +987,10 @@ paths:
           required: true
           schema:
             type: string
-        - name: name
+        - name: id
           in: query
-          description: Application instance ID
-          required: true
+          description: Execution ID for tracking result
+          required: false
           schema:
             type: string
       responses:
@@ -1013,7 +1013,7 @@ paths:
                 gateway:
                   type: string                
                   description: Gateway ID ( serial number )
-                name:
+                inst:
                   type: string
                   description: Application instance ID
                 app:
@@ -1048,7 +1048,7 @@ paths:
                 gateway:
                   type: string                
                   description: Gateway ID ( serial number )
-                name:
+                inst:
                   type: string
                   description: Application instance ID
                 id:
@@ -1074,7 +1074,7 @@ paths:
                 gateway:
                   type: string                
                   description: Gateway ID ( serial number )
-                name:
+                inst:
                   type: string
                   description: Application instance ID
                 conf:
@@ -1103,7 +1103,7 @@ paths:
                 gateway:
                   type: string                
                   description: Gateway ID ( serial number )
-                name:
+                int:
                   type: string
                   description: Application instance ID
                 id:
@@ -1129,9 +1129,12 @@ paths:
                 gateway:
                   type: string                
                   description: Gateway ID ( serial number )
-                name:
+                inst:
                   type: string
                   description: Application instance ID
+                reason:
+                  type: string
+                  description: Stop reason
                 id:
                   type: string
                   description: Execution ID for tracking result
@@ -1155,7 +1158,7 @@ paths:
                 gateway:
                   type: string                
                   description: Gateway ID ( serial number )
-                name:
+                inst:
                   type: string
                   description: Application instance ID
                 app:
@@ -1346,6 +1349,369 @@ paths:
           $ref: '#/components/responses/ApiResponse'
         default:
           $ref: '#/components/responses/ApiExceptionResponse'
+  /applications.test:
+    post:
+      tags:
+        - applications
+      summary: Check whether the api is available or not
+      operationId: apiApplicationTest
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+      parameters: []
+  /applications.list:
+    get:
+      tags:
+        - applications
+      summary: Get user application list
+      operationId: listApplications
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /applications.create:
+    post:
+      tags:
+        - applications
+      summary: Create new application
+      operationId: createApplication
+      requestBody:
+        $ref: '#/components/requestBodies/ApplicationNew'
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /applications.icon:
+    post:
+      tags:
+        - applications
+      summary: Update application icon image file
+      operationId: updateApplicationIcon
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Application ICON file
+                name:
+                  type: string
+                  description: Application ID
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /applications.update:
+    post:
+      tags:
+        - applications
+      summary: Update application information
+      operationId: updateApplicationInfo
+      requestBody:
+        $ref: '#/components/requestBodies/Application'
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /applications.info:
+    get:
+      tags:
+        - applications
+      summary: Query applications infomration
+      operationId: queryApplicationInfo
+      parameters:
+        - name: name
+          in: query
+          description: Application ID
+          required: true
+          schema:
+            type: string
+            default: APP00000001
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /applications.remove:
+    post:
+      tags:
+        - applications
+      summary: Remove application
+      operationId: removeApplication
+      parameters:
+        - name: name
+          in: query
+          description: Applicaton ID
+          required: true
+          explode: true
+          schema:
+            type: string
+            default: APP00000001
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /configurations.test:
+    post:
+      tags:
+        - configurations
+      summary: Check whether the api is available or not
+      operationId: apiConfigurationTest
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+      parameters: []
+  /configurations.list:
+    get:
+      tags:
+        - configurations
+      summary: Get user configuration list
+      operationId: listConfiguration
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /configurations.create:
+    post:
+      tags:
+        - configurations
+      summary: Create new configuration
+      operationId: createConfiguration
+      requestBody:
+        $ref: '#/components/requestBodies/ConfigurationNew'
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /configurations.update:
+    post:
+      tags:
+        - configurations
+      summary: Update application information
+      operationId: updateConfigurationINfo
+      requestBody:
+        $ref: '#/components/requestBodies/Configuration'
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /configurations.info:
+    get:
+      tags:
+        - configurations
+      summary: Query configuration infomration
+      operationId: queryConfigurationInfo
+      parameters:
+        - name: name
+          in: query
+          description: Configuration ID
+          required: true
+          schema:
+            type: string
+            default: CNF0000000001
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /configurations.remove:
+    post:
+      tags:
+        - configurations
+      summary: Remove configurations
+      operationId: removeConfiguration
+      parameters:
+        - name: name
+          in: query
+          description: Configuration ID
+          required: true
+          explode: true
+          schema:
+            type: string
+            default: CNF0000000001
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /companies.test:
+    post:
+      tags:
+        - companies
+      summary: Check whether the api is available or not
+      operationId: apiCompanyTest
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+      parameters: []
+  /companies.list:
+    get:
+      tags:
+        - companies
+      summary: Get user company list
+      operationId: listCompany
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /companies.create:
+    post:
+      tags:
+        - companies
+      summary: Create new company
+      operationId: createCompany
+      requestBody:
+        $ref: '#/components/requestBodies/CompanyNew'
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /companies.update:
+    post:
+      tags:
+        - companies
+      summary: Update company information
+      operationId: updateCompanyInfo
+      requestBody:
+        $ref: '#/components/requestBodies/Company'
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /companies.info:
+    get:
+      tags:
+        - companies
+      summary: Query company infomration
+      operationId: queryCompanyInfo
+      parameters:
+        - name: name
+          in: query
+          description: Company ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /companies.remove:
+    post:
+      tags:
+        - companies
+      summary: Remove company
+      operationId: removeCompany
+      parameters:
+        - name: name
+          in: query
+          description: Company ID
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /pushers.test:
+    post:
+      tags:
+        - pushers
+      summary: Check whether the api is available or not
+      operationId: apiPusherTest
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+      parameters: []
+  /pushers.list:
+    get:
+      tags:
+        - pushers
+      summary: Get cloud pusher list
+      operationId: listPusher
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /pushers.create:
+    post:
+      tags:
+        - pushers
+      summary: Create new pusher
+      operationId: createPusher
+      requestBody:
+        $ref: '#/components/requestBodies/PusherNew'
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /pushers.update:
+    post:
+      tags:
+        - pushers
+      summary: Update pusher information
+      operationId: updatePusherInfo
+      requestBody:
+        $ref: '#/components/requestBodies/Pusher'
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /pushers.info:
+    get:
+      tags:
+        - pushers
+      summary: Query pusher infomration
+      operationId: queryPusherInfo
+      parameters:
+        - name: name
+          in: query
+          description: Pusher ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
+  /pushers.remove:
+    post:
+      tags:
+        - pushers
+      summary: Remove pusher
+      operationId: removePusher
+      parameters:
+        - name: name
+          in: query
+          description: Pusher ID
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ApiResponse'
+        default:
+          $ref: '#/components/responses/ApiExceptionResponse'
   /batch_tasks.list:
     get:
       tags:
@@ -1472,7 +1838,7 @@ paths:
   /store.{operation}.list:
     get:
       tags:
-        - xtags
+        - store
       summary: Get store operation object list 
       operationId: listStoreOperationObjects
       parameters:
@@ -1508,7 +1874,7 @@ paths:
   /store.{operation}.create:
     get:
       tags:
-        - xtags
+        - store
       summary: Create store {operation} object
       operationId: createStoreOperationObject
       parameters:
@@ -1547,7 +1913,7 @@ paths:
   /store.{operation}.info:
     get:
       tags:
-        - xtags
+        - store
       summary: Get store {operation} object information
       operationId: getStoreOperationObjectInformation
       parameters:
@@ -1583,7 +1949,7 @@ paths:
   /store.{operation}.update:
     get:
       tags:
-        - xtags
+        - store
       summary: Update store operation object information
       operationId: updateStoreOperationObjectInformation
       parameters:
@@ -1622,7 +1988,7 @@ paths:
   /store.{operation}.remove:
     get:
       tags:
-        - xtags
+        - store
       summary: Remove store {operation} object
       operationId: removeStoreOperationObject
       parameters:
