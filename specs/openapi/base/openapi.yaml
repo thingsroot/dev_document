@@ -2390,6 +2390,255 @@ components:
         owner_company:
           type: string
           description: Owner company id
+    Activity:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Activity ID
+        subject:
+          type: string
+          description: Activity Subject.
+        operation:
+          type: string
+          description: Activity Operation type
+          enum:
+            - Owner
+            - Status
+            - Action
+        status:
+          type: string
+          description: Activity operation result
+          enum:
+            - Success
+            - Failed
+        message:
+          type: string
+          description: Activity detail message object in json.
+          items:
+            type: string
+        disposed:
+          type: integer
+          description: Activity disposed
+          enum:
+            - 0
+            - 1
+        disposed_by:
+          type: string
+          description: The user who disposed this activity.
+        device:
+          type: string
+          description: Gateway device id.
+        user:
+          type: string
+          description: The user who generates this activity.
+        full_name:
+          type: string
+          description: The user fullname
+        owner_type:
+          type: string
+          description: Owner type
+          enum:
+            - User
+            - Cloud Company Group
+          default: User
+        owner_id:
+          type: string
+          description: Onwer ID
+        owner_company:
+          type: string
+          description: Owner company id
+        creation:
+          type: date-time
+          description: Activtity creation timestamp.
+    Event:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Event ID
+        device:
+          type: string
+          description: Gateway device id.
+        event_source:
+          type: string
+          description: Event source device id.
+        event_level:
+          type: integer
+          description: Event level.
+        event_type:
+          type: string
+          description: Event type
+          enum:
+            - SYS
+            - DEV
+            - COMM
+            - DATA
+            - APP
+        event_info:
+          type: string
+          description: Event information.
+          items:
+            type: string
+        event_data:
+          type: string
+          description: Event data object in json.
+        event_time:
+          type: date-time
+          description: Event timestamp.
+        disposed:
+          type: integer
+          description: Activity disposed
+          enum:
+            - 0
+            - 1
+        disposed_by:
+          type: string
+          description: The user who disposed this activity.
+        owner_type:
+          type: string
+          description: Owner type
+          enum:
+            - User
+            - Cloud Company Group
+          default: User
+        owner_id:
+          type: string
+          description: Onwer ID
+        owner_company:
+          type: string
+          description: Owner company id
+    Pusher:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Pusher ID
+        app_name:
+          type: string
+          description: Pusher Application Name.
+        description:
+          type: string
+          description: Pusher application description
+        uri:
+          type: string
+          description: HTTP URI which receive the data push
+        enabled:
+          type: integer
+          description: Enable flag.
+          enum:
+            - 0
+            - 1
+        on_behalf:
+          type: string
+          description: On behalf user id.
+        device:
+          type: integer
+          description: Enable this if Pusher application needs device information and any update
+          enum:
+            - 0
+            - 1
+        device_event:
+          type: integer
+          description: Enable this if Pusher application needs device events
+          enum:
+            - 0
+            - 1
+        device_data:
+          type: integer
+          description: Enable this if Pusher application needs device data (by MQTT)
+          enum:
+            - 0
+            - 1
+        device_data_mqtt_host:
+          type: string
+          description: Device data MQTT broker host
+        device_data_mqtt_user:
+          type: string
+          description: Device data MQTT broker login username
+        device_data_mqtt_passwd:
+          type: string
+          description: Device data MQTT broker login password
+    Batch_Task_New:
+      type: object
+      properties:
+        task_name:
+          type: string
+          description: Batch Task Name.
+        timeout:
+          type: integer
+          description: Batch script run timeout in seconds.
+        task_description:
+          type: string
+          description: Batch task description
+        batch_script:
+          type: string
+          description: Batch task script content.
+        device_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/Batch_Task_Device'
+    Batch_Task:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Batch Task ID
+        task_name:
+          type: string
+          description: Batch Task Name.
+        timeout:
+          type: integer
+          description: Batch script run timeout in seconds.
+        owner_id:
+          type: string
+          description: Batch task creator id.
+        status:
+          type: string
+          description: Batch task status.
+          enum:
+            - New
+            - Running
+            - Finished
+            - Error
+            - Partial
+        task_description:
+          type: string
+          description: Batch task description
+        batch_script:
+          type: string
+          description: Batch task script content.
+        device_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/Batch_Task_Device'
+        creation:
+          type: date-time
+          description: Task creation timestamp.
+    Batch_Task_Device:
+      type: object
+      properties:
+        device:
+          type: string
+          description: Batch Task Device ID.
+        status:
+          type: string
+          description: Batch task status.
+          enum:
+            - New
+            - Running
+            - Finished
+            - Error
+            - Partial
+        info:
+          type: string
+          description: Task execution result infomration.
+        action_id:
+          type: string
+          description: Task execution id.
+        action_starttime:
+          type: date-time
+          description: Task execution start time.
   requestBodies:
     UserSignup:
       content:
