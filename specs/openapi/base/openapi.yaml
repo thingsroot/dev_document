@@ -133,7 +133,7 @@ paths:
         default:
           $ref: '#/components/responses/ApiExceptionResponse'
       parameters: []
-  /user.info:
+  /user.read:
     get:
       tags:
         - user
@@ -273,7 +273,7 @@ paths:
                   - authorization_code_exists
                   - authorization_code_created
       parameters: []
-  /user.token.info:
+  /user.token.read:
     get:
       tags:
         - user
@@ -363,7 +363,7 @@ paths:
                 enum: 
                   - exception
                   - virtual_gateway_created
-  /user.virtual_gateways.info:
+  /user.virtual_gateways.read:
     get:
       tags:
         - user
@@ -458,7 +458,7 @@ paths:
                 enum: 
                   - exception
                   - has_no_permission
-  /{category}.activities.info:
+  /{category}.activities.read:
     get:
       tags:
         - activities
@@ -606,7 +606,7 @@ paths:
                 enum: 
                   - exception
                   - has_no_permission
-  /{category}.events.info:
+  /{category}.events.read:
     get:
       tags:
         - events
@@ -893,7 +893,7 @@ paths:
           $ref: '#/components/responses/ApiResponse'
         default:
           $ref: '#/components/responses/ApiExceptionResponse'
-  /gateways.info:
+  /gateways.read:
     get:
       tags:
         - gateways
@@ -1178,7 +1178,7 @@ paths:
           $ref: '#/components/responses/ApiResponse'
         default:
           $ref: '#/components/responses/ApiExceptionResponse'
-  /gateways.beta.info:
+  /gateways.beta.read:
     get:
       tags:
         - gateways
@@ -1234,7 +1234,7 @@ paths:
           $ref: '#/components/responses/ApiResponse'
         default:
           $ref: '#/components/responses/ApiExceptionResponse'
-  /gateways.devices.info:
+  /gateways.devices.read:
     get:
       tags:
         - gateways
@@ -1419,7 +1419,7 @@ paths:
           $ref: '#/components/responses/ApiResponse'
         default:
           $ref: '#/components/responses/ApiExceptionResponse'
-  /applications.info:
+  /applications.read:
     get:
       tags:
         - applications
@@ -1505,7 +1505,7 @@ paths:
           $ref: '#/components/responses/ApiResponse'
         default:
           $ref: '#/components/responses/ApiExceptionResponse'
-  /configurations.info:
+  /configurations.read:
     get:
       tags:
         - configurations
@@ -1591,7 +1591,7 @@ paths:
           $ref: '#/components/responses/ApiResponse'
         default:
           $ref: '#/components/responses/ApiExceptionResponse'
-  /companies.info:
+  /companies.read:
     get:
       tags:
         - companies
@@ -1675,7 +1675,7 @@ paths:
           $ref: '#/components/responses/ApiResponse'
         default:
           $ref: '#/components/responses/ApiExceptionResponse'
-  /pushers.info:
+  /pushers.read:
     get:
       tags:
         - pushers
@@ -1758,7 +1758,7 @@ paths:
           $ref: '#/components/responses/ApiResponse'
         default:
           $ref: '#/components/responses/ApiExceptionResponse'
-  /batch_tasks.info:
+  /batch_tasks.read:
     get:
       tags:
         - batch_tasks
@@ -1818,7 +1818,7 @@ paths:
           $ref: '#/components/responses/ApiResponse'
         default:
           $ref: '#/components/responses/ApiExceptionResponse'
-  /store.info:
+  /store.read:
     get:
       tags:
         - store
@@ -1910,7 +1910,7 @@ paths:
                 type: string
                 enum: 
                   - exception
-  /store.{operation}.info:
+  /store.{operation}.read:
     get:
       tags:
         - store
@@ -2026,6 +2026,66 @@ externalDocs:
   url: 'https://thingsroot.com/api/example.html'
 components:
   schemas:
+    ApiResponseOK:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        info:
+          type: string
+        data:
+          type: any
+    ApiResponseOK_Warning:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        warning:
+          type: string
+        data:
+          type: any
+    ApiResponseOK_Warnings:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        error:
+          type: string
+        warning:
+          type: array
+          items:
+              type: string
+        data:
+          type: object
+    ApiResponseOK_Error:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        error:
+          type: string
+        exception:
+          type: string
+    ApiResponse:
+      oneOf:
+        - $ref: '#/components/schemas/ApiResponseOK'
+        - $ref: '#/components/schemas/ApiResponseOK_Warning'
+        - $ref: '#/components/schemas/ApiResponseOK_Warnings'
+        - $ref: '#/components/schemas/ApiResponseOK_Error'
+    ApiTestResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          type: string
+        source:
+          type: string
+    ApiExceptionResponse:
+      type: object
+      properties:
+        exc:
+          type: string
     Company:
       type: object
       properties:
@@ -2153,66 +2213,183 @@ components:
           type: string
       xml:
         name: Tag
-    ApiResponseOK:
+    ApplicationNew:
       type: object
       properties:
-        ok:
-          type: boolean
-        info:
+        app_name:
           type: string
-        data:
-          type: any
-    ApiResponseOK_Warning:
-      type: object
-      properties:
-        ok:
-          type: boolean
-        warning:
+          description: Application Name.
+        code_name:
           type: string
-        data:
-          type: any
-    ApiResponseOK_Warnings:
-      type: object
-      properties:
-        ok:
-          type: boolean
-        error:
+          description: Application code name for pkg url.
+        has_conf_template:
+          type: integer
+          description: Whether application has configruation template or not
+          enum:
+            - 0
+            - 1
+        license_type:
           type: string
-        warning:
+          description: Licence type
+          enum:
+            - Open
+            - Private
+            - Close
+        star:
+          type: integer
+          description: Application star
+        description:
+          type: string
+          description: Application description
+        conf_template:
+          type: string
+          description: Application configuration template string(in json)
+        pre_configuration:
+          type: string
+          description: Pre application configuration
+        keywords:
           type: array
+          description: Application keywords
           items:
-              type: string
-        data:
-          type: object
-    ApiResponseOK_Error:
+            type: string
+    Application:
       type: object
       properties:
-        ok:
-          type: boolean
-        error:
+        name:
           type: string
-        exception:
+          description: Application ID
+        app_name:
           type: string
-    ApiResponse:
-      oneOf:
-        - $ref: '#/components/schemas/ApiResponseOK'
-        - $ref: '#/components/schemas/ApiResponseOK_Warning'
-        - $ref: '#/components/schemas/ApiResponseOK_Warnings'
-        - $ref: '#/components/schemas/ApiResponseOK_Error'
-    ApiTestResponse:
+          description: Application Name.
+        code_name:
+          type: string
+          description: Application code name for pkg url.
+        has_conf_template:
+          type: integer
+          description: Whether application has configruation template or not
+          enum:
+            - 0
+            - 1
+        license_type:
+          type: string
+          description: Licence type
+          enum:
+            - Open
+            - Private
+            - Close
+        star:
+          type: integer
+          description: Application star
+        fork_from:
+          type: string
+          description: Fork application ID
+        fork_version:
+          type: integer
+          description: Fork version
+        description:
+          type: string
+          description: Application description
+        conf_template:
+          type: string
+          description: Application configuration template string(in json)
+        pre_configuration:
+          type: string
+          description: Pre application configuration
+        icon_image:
+          type: string
+          description: Icon image file url path.
+        keywords:
+          type: array
+          description: Application keywords
+          items:
+            type: string
+        owner:
+          type: string
+          description: Onwer ID
+    ConfigurationNew:
       type: object
       properties:
-        ok:
-          type: boolean
-        data:
+        app:
           type: string
-        source:
+          description: Application ID.
+        conf_name:
           type: string
-    ApiExceptionResponse:
+          description: Configuration name.
+        description:
+          type: string
+          description: Configuration description
+        type:
+          type: string
+          description: Configuration type
+          enum:
+            - Template
+            - Configuration
+            - Other
+        public:
+          type: integer
+          enum:
+            - 0
+            - 1
+        keywords:
+          type: array
+          description: Application keywords
+          items:
+            type: string
+        owner_type:
+          type: string
+          description: Owner type
+          enum:
+            - User
+            - Cloud Company Group
+          default: User
+        owner_id:
+          type: string
+          description: Onwer ID
+    Configuration:
       type: object
       properties:
-        exc:
+        name:
           type: string
+          description: Configuration ID
+        app:
+          type: string
+          description: Application ID.
+        conf_name:
+          type: string
+          description: Configuration name.
+        description:
+          type: string
+          description: Configuration description
+        type:
+          type: string
+          description: Configuration type
+          enum:
+            - Template
+            - Configuration
+            - Other
+        public:
+          type: integer
+          enum:
+            - 0
+            - 1
+        keywords:
+          type: array
+          description: Application keywords
+          items:
+            type: string
+        owner_type:
+          type: string
+          description: Owner type
+          enum:
+            - User
+            - Cloud Company Group
+          default: User
+        owner_id:
+          type: string
+          description: Onwer ID
+        owner_company:
+          type: string
+          description: Owner company id
   requestBodies:
     UserSignup:
       content:
