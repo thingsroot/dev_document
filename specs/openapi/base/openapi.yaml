@@ -2639,6 +2639,135 @@ components:
         action_starttime:
           type: date-time
           description: Task execution start time.
+    StoreAppCommentNew:
+      type: object
+      properties:
+        app:
+          type: string
+          description: Application ID.
+        comment:
+          type: string
+          description: Comment message.
+        reply_to:
+          type: string
+          description: Comment reply to.
+        creation:
+          type: date-time
+          description: Comment creation timestamp.
+    StoreAppComment:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Comment ID.
+        app:
+          type: string
+          description: Application ID.
+        comment:
+          type: string
+          description: Comment message.
+        reply_to:
+          type: string
+          description: Comment reply to.
+        creation:
+          type: date-time
+          description: Comment creation timestamp.
+    StoreAppReviewNew:
+      type: object
+      properties:
+        app:
+          type: string
+          description: Application ID.
+        title:
+          type: string
+          description: Review title.
+        star:
+          type: integer
+          description: Review star.
+        content:
+          type: string
+          description: Review content.
+        comments:
+          type: array
+          description: Review Comment.
+    StoreAppReview:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Comment ID.
+        app:
+          type: string
+          description: Application ID.
+        title:
+          type: string
+          description: Review title.
+        star:
+          type: integer
+          description: Review star.
+        content:
+          type: string
+          description: Review content.
+        comments:
+          type: array
+          description: Review Comment.
+        creation:
+          type: date-time
+          description: Comment creation timestamp.
+    StoreAppIssueNew:
+      type: object
+      properties:
+        app:
+          type: string
+          description: Application ID.
+        title:
+          type: string
+          description: Issue title.
+        priority:
+          type: string
+          description: Issue priority.
+          enum:
+            - Low
+            - Middle
+            - High
+        content:
+          type: string
+          description: Issue content.
+    StoreAppIssue:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Issue ID.
+        app:
+          type: string
+          description: Application ID.
+        title:
+          type: string
+          description: Issue title.
+        status:
+          type: string
+          description: Issue status.
+          enum:
+            - Open
+            - Closed
+            - Invalid
+        priority:
+          type: string
+          description: Issue priority.
+          enum:
+            - Low
+            - Middle
+            - High
+        content:
+          type: string
+          description: Issue content.
+        comments:
+          type: array
+          description: Issue Comment.
+        creation:
+          type: date-time
+          description: Comment creation timestamp.
   requestBodies:
     UserSignup:
       content:
